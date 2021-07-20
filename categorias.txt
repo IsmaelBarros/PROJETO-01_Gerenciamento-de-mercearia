@@ -1,0 +1,5 @@
+bebidas alcoolicas
+carnes
+aves
+portatil
+frutas

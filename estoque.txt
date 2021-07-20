@@ -1,0 +1,3 @@
+iphone|900|portatil|7
+banana|2.99|frutas|0
+abacaxi|4.99|frutas|70

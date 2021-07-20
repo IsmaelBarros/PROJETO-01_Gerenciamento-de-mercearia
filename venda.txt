@@ -1,0 +1,10 @@
+banana|2.99|frutas|Aldecir|Pel�cia|15|20/07/2021
+banana|2.99|frutas|jucim�rio|Aldem�r�cio|20|20/07/2021
+banana|2.99|frutas|Aldebário José|Jucilênildo|5|20/07/2021
+banana|2.99|frutas|Aldebário José|Jucilênildo|50|20/07/2021
+banana|2.99|frutas|Aldebário José|Cleonilso|10|20/07/2021
+abacaxi|4.99|frutas|Aldebário José|Cleonilso|10|20/07/2021
+abacaxi|4.99|frutas|Aldebário José|Jeocidio|15|20/07/2021
+abacaxi|4.99|frutas|Aldebário José|Cleopatra|5|20/07/2021
+iphone|900|portatil|Arnaldo j jr|Serafim|1|20/07/2021
+iphone|900|portatil|Cristaldo|Amaral|2|20/07/2021
