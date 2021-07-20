@@ -239,8 +239,34 @@ class ControllerVenda:
                   f"Quantidade: {i['quantidade']}\n")
             a += 1
 
+    def mostrar_vendas(self, data_ini, data_fin):
+        vendas = DaoVenda.ler()
 
-#a = ControllerVenda()
+        data_inicio = datetime.strptime(data_ini, '%d/%m/%Y')
+        data_termino = datetime.strptime(data_fin, '%d/%m/%Y')
+
+        vendas_selecionadas = list(filter(lambda x: datetime.strptime(x.data, '%d/%m/%Y') >= data_inicio
+                                          and datetime.strptime(x.data, '%d/%m/%Y') <= data_termino, vendas))
+
+        count = 1
+        total = 0
+        for i in vendas_selecionadas:
+            print(f"==========Produto [{count}]==========")
+            print(f"Nome: {i.itemVendido.nome}\n"
+                  f"Preço: R${i.itemVendido.preco}\n"
+                  f"Categoria: {i.itemVendido.categoria.categoria}\n"
+                  f"Data: {i.data}\n"
+                  f"Quantidade Vendida: {i.quantidadeVendida}\n"
+                  f"Cliente: {i.comprador}\n"
+                  f"Vendedor: {i.vendedor}\n")
+            total += float(i.itemVendido.preco) * int(i.quantidadeVendida)
+            count += 1
+
+        print(f"Total vendido : R${total:.2f}")
+
+
+a = ControllerVenda()
+a.mostrar_vendas('01/03/2021', '31/03/2021')
 # a.relatorio_vendas()
 # a.cadastrar_venda('abacaxi', 'Aldebário José', 'Cleonilso', 10)
 # a.cadastrar_venda('abacaxi', 'Aldebário José', 'Jeocidio', 15)
