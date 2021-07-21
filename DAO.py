@@ -34,7 +34,7 @@ class DaoCategoria:
 
 class DaoVenda:
 
-    db_file = 'venda.txt'
+    db_file = 'vendas.txt'
 
     @classmethod
     def salvar(cls, venda: Venda):
@@ -122,7 +122,7 @@ class DaoFornecedor:
                 pass
 
 
-class DaoPessoa():
+class DaoPessoa:
 
     db_file = 'clientes.txt'
 
@@ -137,18 +137,23 @@ class DaoPessoa():
 
     @classmethod
     def ler(cls):
-        with open(cls.db_file, 'r') as arq:
-            cls.clientes = arq.readlines()
+        if os.path.isfile(cls.db_file):
+            with open(cls.db_file, 'r') as arq:
+                cls.clientes = arq.readlines()
 
-        cls.clientes = list(map(lambda x: x.replace('\n', ''), cls.clientes))
-        cls.clientes = list(map(lambda x: x.split('|'), cls.clientes))
+            cls.clientes = list(
+                map(lambda x: x.replace('\n', ''), cls.clientes))
+            cls.clientes = list(map(lambda x: x.split('|'), cls.clientes))
 
-        cl = []
-        for cliente in cls.clientes:
-            cl.append(Pessoa(cliente[0], cliente[1],
-                             cliente[2], cliente[3],
-                             Endereco(cliente[4], cliente[5], cliente[6], cliente[7], cliente[8], cliente[9])))
-        return cl
+            cl = []
+            for cliente in cls.clientes:
+                cl.append(Pessoa(cliente[0], cliente[1],
+                                 cliente[2], cliente[3],
+                                 Endereco(cliente[4], cliente[5], cliente[6], cliente[7], cliente[8], cliente[9])))
+            return cl
+        else:
+            with open(cls.db_file, 'w') as arq:
+                pass
 
 
 class DaoFuncionario:
@@ -166,15 +171,51 @@ class DaoFuncionario:
 
     @classmethod
     def ler(cls):
-        with open(cls.db_file, 'r') as arq:
-            cls.funcionarios = arq.readlines()
+        if os.path.isfile(cls.db_file):
+            with open(cls.db_file, 'r') as arq:
+                cls.funcionarios = arq.readlines()
 
-        cls.funcionarios = list(
-            map(lambda x: x.replace('\n', ''), cls.funcionarios))
-        cls.funcionarios = list(map(lambda x: x.split('|'), cls.funcionarios))
+            cls.funcionarios = list(
+                map(lambda x: x.replace('\n', ''), cls.funcionarios))
+            cls.funcionarios = list(
+                map(lambda x: x.split('|'), cls.funcionarios))
 
-        func = []
-        for funcionario in cls.funcionarios:
-            func.append(Funcionario(funcionario[0], funcionario[1], funcionario[2], funcionario[3], funcionario[4],
-                                    Endereco(funcionario[5], funcionario[6], funcionario[7], funcionario[8], funcionario[9], funcionario[10])))
-        return func
+            func = []
+            for funcionario in cls.funcionarios:
+                func.append(Funcionario(funcionario[0], funcionario[1], funcionario[2], funcionario[3], funcionario[4],
+                                        Endereco(funcionario[5], funcionario[6], funcionario[7], funcionario[8], funcionario[9], funcionario[10])))
+            return func
+        else:
+            with open(cls.db_file, 'w') as arq:
+                pass
+
+
+class DaoEndereco:
+
+    db_file = 'endereco.txt'
+
+    @classmethod
+    def salvar(cls, endereco: Endereco):
+        with open(cls.db_file, 'a', encoding='utf-8', errors='replace') as arq:
+            arq.writelines(endereco.logradouro + '|' + str(endereco.numero) + '|' +
+                           endereco.bairro + '|' + endereco.cep + '|' + endereco.cidade + '|' + endereco.estado)
+            arq.writelines('\n')
+
+    @classmethod
+    def ler(cls):
+        if os.path.isfile(cls.db_file):
+            with open(cls.db_file, 'r') as arq:
+                enderecos = arq.readlines()
+
+            endereco_list = list(map(lambda x: x.replace('\n', ''), enderecos))
+            endereco_list = list(map(lambda x: x.split('|'), enderecos))
+
+            end = []
+            for elem in endereco_list:
+                end.append(Endereco(elem[0], elem[1],
+                                    elem[2], elem[3], elem[4], elem[5]))
+
+            return end
+        else:
+            with open(cls.db_file, 'w') as arq:
+                pass

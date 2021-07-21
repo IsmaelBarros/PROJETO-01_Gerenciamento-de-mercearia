@@ -358,22 +358,261 @@ class ControllerFornecedor:
         else:
             print('A categoria informada não existe')
 
+    def remover_fornecedor(self, nome):
+        fornecedores = DaoFornecedor.ler()
+
+        fornec = list(
+            filter(lambda x: x.nome == nome, fornecedores))
+
+        if fornec:
+            for i in range(len(fornecedores)):
+                if fornecedores[i].nome == nome:
+                    del fornecedores[i]
+                    print('O fornecedor foi removido com sucesso.')
+                    break
+        else:
+            print('O fornecedor que deseja remover não existe')
+
+        with open('fornecedor.txt', 'w', encoding='UTF-8', errors='replace') as arq:
+            for i in fornecedores:
+                arq.writelines(i.nome + '|' + i.cnpj + '|' +
+                               i.telefone + '|' + i.categoria.categoria)
+                arq.writelines('\n')
+
+    def mostrar_fornecedor(self):
+        fornecedores = DaoFornecedor.ler()
+
+        if not fornecedores:
+            print('Estoque vazio')
+        else:
+            print('==========Fornecedores==========')
+            for i in fornecedores:
+                print(
+                    f'Nome: {i.nome}\n'
+                    f'CNPJ: {i.cnpj}\n'
+                    f'Telefone: {i.telefone}\n'
+                    f'Categoria: {i.categoria.categoria}'
+                )
+                print('--------------------')
+
 
 class ControllerCliente:
-    pass
+
+    def cadastrar_cliente(self, nome_cliente, telefone, cpf, email, logradouro, numero, bairro, cep, cidade, estado):
+        clientes = DaoPessoa.ler()
+
+        if not clientes:
+            DaoPessoa.salvar(Pessoa(
+                nome_cliente, telefone, cpf, email,
+                Endereco(logradouro, numero, bairro, cep, cidade, estado)))
+            sys.exit('Primeiro cliente foi cadastrado com sucesso.')
+
+        cpf_existente = list(filter(lambda x: x.cpf == cpf, clientes))
+        telefone_existente = list(
+            filter(lambda x: x.telefone == telefone, clientes))
+        email_existente = list(filter(lambda x: x.email == email, clientes))
+
+        if not cpf_existente:
+            if not email_existente:
+                if not telefone_existente:
+                    DaoPessoa.salvar(Pessoa(
+                        nome_cliente, telefone, cpf, email, Endereco(logradouro, numero, bairro, cep, cidade, estado)))
+                    print('O cliente foi cadastrado com sucesso.')
+                else:
+                    print('Telefone já existente')
+            else:
+                print('email já existente')
+        else:
+            print(
+                'O cpf informado já se encontra no nosso banco de dados')
+
+    def alterar_cliente(self, nome_alterar, nome_novo, telefone, cpf, email, logradouro, numero, bairro, cep, cidade, estado):
+        clientes = DaoPessoa.ler()
+
+        cpf_list = list(
+            filter(lambda x: x.cpf == cpf, clientes))
+
+        if cpf_list:
+            cliente_cadastrado = list(
+                filter(lambda x: x.nome == nome_alterar, clientes))
+            if cliente_cadastrado:
+                cliente_existente = list(
+                    filter(lambda x: x.nome == nome_novo, clientes))
+                if not cliente_existente:
+                    clientes = list(
+                        map(
+                            lambda x: Pessoa(nome_novo, telefone, cpf, email, Endereco(
+                                logradouro, numero, bairro, cep, cidade, estado)) if(x.nome == nome_alterar) else(x), clientes))
+
+                    with open('clientes.txt', 'w', encoding='UTF-8', errors='replace') as arq:
+                        for cliente in clientes:
+                            arq.writelines(cliente.nome + '|' + cliente.telefone + '|' + cliente.cpf + '|' + cliente.email + '|' + cliente.endereco.logradouro + '|' +
+                                           cliente.endereco.numero + '|' + cliente.endereco.bairro + '|' + cliente.endereco.cep + '|' + cliente.endereco.cidade + '|' + cliente.endereco.estado)
+                            arq.writelines('\n')
+                        print('O cliente foi alterado com sucesso.')
+                else:
+                    print('Fornecedor já cadastrado')
+            else:
+                print('O cliente que deseja alterar não existe.')
+        else:
+            print('O cpf informado não existe no nosso cadastro')
+
+    def remover_cliente(self, nome):
+        clientes = DaoPessoa.ler()
+
+        cl = list(
+            filter(lambda x: x.nome == nome, clientes))
+
+        if cl:
+            for i in range(len(clientes)):
+                if clientes[i].nome == nome:
+                    del clientes[i]
+                    print('O cliente foi removido com sucesso.')
+                    break
+        else:
+            print('O cliente que deseja remover não existe')
+
+        with open('clientes.txt', 'w', encoding='UTF-8', errors='replace') as arq:
+            for cliente in clientes:
+                arq.writelines(cliente.nome + '|' + cliente.telefone + '|' + cliente.cpf + '|' + cliente.email + '|' + cliente.endereco.logradouro + '|' +
+                               cliente.endereco.numero + '|' + cliente.endereco.bairro + '|' + cliente.endereco.cep + '|' + cliente.endereco.cidade + '|' + cliente.endereco.estado)
+                arq.writelines('\n')
+
+    def mostrar_cliente(self):
+        clientes = DaoPessoa.ler()
+
+        if not clientes:
+            print('Não há clientes cadastrados')
+        else:
+            print('==========Clientes==========')
+            for i in clientes:
+                print(
+                    f'Nome:     {i.nome}\n'
+                    f'CPF:      {i.cpf}\n'
+                    f'Telefone: {i.telefone}\n'
+                    f'Email:    {i.email}\n'
+                    f'Rua:      {i.endereco.logradouro}\n'
+                    f'Numero:   {i.endereco.numero}\n'
+                    f'Bairro:   {i.endereco.bairro}\n'
+                    f'Cep:      {i.endereco.cep}\n'
+                    f'Cidade:   {i.endereco.cidade}\n'
+                    f'Estado:   {i.endereco.estado}\n'
+                )
+                print('--------------------')
 
 
 class ControllerFuncionario:
-    pass
+
+    def cadastrar_funcionario(self, clt, nome_func, telefone, cpf, email, logradouro, numero, bairro, cep, cidade, estado):
+        funcionarios = DaoFuncionario.ler()
+
+        if not funcionarios:
+            DaoFuncionario.salvar(Funcionario(
+                clt, nome_func, telefone, cpf, email,
+                Endereco(logradouro, numero, bairro, cep, cidade, estado)))
+            sys.exit('Primeiro funcionário foi cadastrado com sucesso.')
+
+        cpf_existente = list(filter(lambda x: x.cpf == cpf, funcionarios))
+        clt_existente = list(filter(lambda x: x.clt == clt, funcionarios))
+        telefone_existente = list(
+            filter(lambda x: x.telefone == telefone, funcionarios))
+        email_existente = list(
+            filter(lambda x: x.email == email, funcionarios))
+
+        if not cpf_existente:
+            if not clt_existente:
+                if not email_existente:
+                    if not telefone_existente:
+                        DaoFuncionario.salvar(Funcionario(
+                            clt, nome_func, telefone, cpf, email, Endereco(logradouro, numero, bairro, cep, cidade, estado)))
+                        print('O funcionário foi cadastrado com sucesso.')
+                    else:
+                        print('Telefone já existente')
+                else:
+                    print('email já existente')
+            else:
+                print('O registro da clt já existe')
+        else:
+            print(
+                'O cpf informado já se encontra no nosso banco de dados')
+
+    def alterar_funcionario(self, nome_alterar, nome_novo, clt, telefone, cpf, email, logradouro, numero, bairro, cep, cidade, estado):
+        funcionarios = DaoFuncionario.ler()
+
+        cpf_list = list(
+            filter(lambda x: x.cpf == cpf, funcionarios))
+
+        if cpf_list:
+            funcionario_cadastrado = list(
+                filter(lambda x: x.nome == nome_alterar, funcionarios))
+            if funcionario_cadastrado:
+                funcionario_existente = list(
+                    filter(lambda x: x.nome == nome_novo, funcionarios))
+                if not funcionario_existente:
+                    funcionarios = list(
+                        map(
+                            lambda x: Funcionario(clt, nome_novo, telefone, cpf, email, Endereco(
+                                logradouro, numero, bairro, cep, cidade, estado)) if(x.nome == nome_alterar) else(x), funcionarios))
+
+                    with open('clientes.txt', 'w', encoding='UTF-8', errors='replace') as arq:
+                        for funcionario in funcionarios:
+                            arq.writelines(funcionario.nome + '|' + funcionario.telefone + '|' + funcionario.cpf + '|' + funcionario.email + '|' + funcionario.endereco.logradouro + '|' +
+                                           funcionario.endereco.numero + '|' + funcionario.endereco.bairro + '|' + funcionario.endereco.cep + '|' + funcionario.endereco.cidade + '|' + funcionario.endereco.estado)
+                            arq.writelines('\n')
+                        print('O funcionario foi alterado com sucesso.')
+                else:
+                    print('Fornecedor já cadastrado')
+            else:
+                print('O cliente que deseja alterar não existe.')
+        else:
+            print('O cpf informado não existe no nosso cadastro')
+
+    def remover_funcionario(self, nome):
+        clientes = DaoPessoa.ler()
+
+        cl = list(
+            filter(lambda x: x.nome == nome, clientes))
+
+        if cl:
+            for i in range(len(clientes)):
+                if clientes[i].nome == nome:
+                    del clientes[i]
+                    print('O cliente foi removido com sucesso.')
+                    break
+        else:
+            print('O cliente que deseja remover não existe')
+
+        with open('clientes.txt', 'w', encoding='UTF-8', errors='replace') as arq:
+            for cliente in clientes:
+                arq.writelines(cliente.nome + '|' + cliente.telefone + '|' + cliente.cpf + '|' + cliente.email + '|' + cliente.endereco.logradouro + '|' +
+                               cliente.endereco.numero + '|' + cliente.endereco.bairro + '|' + cliente.endereco.cep + '|' + cliente.endereco.cidade + '|' + cliente.endereco.estado)
+                arq.writelines('\n')
+
+    def mostrar_funcionario(self):
+        clientes = DaoPessoa.ler()
+
+        if not clientes:
+            print('Não há clientes cadastrados')
+        else:
+            print('==========Clientes==========')
+            for i in clientes:
+                print(
+                    f'Nome:     {i.nome}\n'
+                    f'CPF:      {i.cpf}\n'
+                    f'Telefone: {i.telefone}\n'
+                    f'Email:    {i.email}\n'
+                    f'Rua:      {i.endereco.logradouro}\n'
+                    f'Numero:   {i.endereco.numero}\n'
+                    f'Bairro:   {i.endereco.bairro}\n'
+                    f'Cep:      {i.endereco.cep}\n'
+                    f'Cidade:   {i.endereco.cidade}\n'
+                    f'Estado:   {i.endereco.estado}\n'
+                )
+                print('--------------------')
 
 
-a = ControllerFornecedor()
-a.alterar_fornecedor('OrangeCo Ltda', 'FruitsCo Ltda',
-                     '10774927000144', '977111343', 'frutas')
-
-#a = ControllerCategoria()
-# a.cadastrar_categoria('games')
-
-# a = ControllerFornecedor()
-# a.cadastrar_fornecedor('CerealWorld Company', '99974927000144',
-#                        '966611343', 'cereais')
+a = ControllerFuncionario()
+a.cadastrar_funcionario('123', 'christian', '123459875', '43312256678', 'cris@gmail.com',
+                        'rua ipe rosa', '34', 'vila carrão', '98735340', 'sao caetano', 'paraiba')
+a.cadastrar_funcionario('456', 'joão', '129999875', '43388856678', 'joao@gmail.com',
+                        'rua ipe branco', '64', 'vila boobo', '93435340', 'sao caetano', 'bahia')

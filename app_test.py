@@ -23,22 +23,22 @@ print(prod1.nome, prod1.preco, prod1.categoria)
 prod2 = Produto('presunto', '8.49', lista_cat[1].categoria)
 print(prod2.nome, prod2.preco, prod2.categoria)
 
-venda1 = Venda(prod1, 'Maira', 'Ismael', '1')
-print(venda1.itemVendido.nome)
-venda2 = Venda(prod2, 'Joao', 'Jesus', '2')
-print(venda2.itemVendido.nome)
+# venda1 = Venda(prod1, 'Maira', 'Ismael', '1')
+# print(venda1.item_vendido.nome)
+# venda2 = Venda(prod2, 'Joao', 'Jesus', '2')
+# print(venda2.item_vendido.nome)
 
 
-venda_dao = DaoVenda()
+#venda_dao = DaoVenda()
 # venda_dao.salvar(venda1)
 # venda_dao.salvar(venda2)
 
-print('-------------------')
-lista_de_vendas = venda_dao.ler()
-for venda in lista_de_vendas:
-    print(venda.itemVendido.nome)
-    print(venda.itemVendido.categoria.categoria)
-print('------------------')
+# print('-------------------')
+# lista_de_vendas = venda_dao.ler()
+# for venda in lista_de_vendas:
+#     print(venda.item_vendido.nome)
+#     print(venda.item_vendido.categoria.categoria)
+# print('------------------')
 
 
 estoque1 = Estoque(prod1, '10')
@@ -63,9 +63,9 @@ fornec2 = Fornecedor('Isabel', '44.345.333.00001-01', '11166578', cat3)
 fornec3 = Fornecedor('jaqueline', '77.345.678.00001-01', '99566578', cat4)
 
 fornec_dao = DaoFornecedor()
-fornec_dao.salvar(fornec1)
-fornec_dao.salvar(fornec2)
-fornec_dao.salvar(fornec3)
+# fornec_dao.salvar(fornec1)
+# fornec_dao.salvar(fornec2)
+# fornec_dao.salvar(fornec3)
 
 print('--------------------')
 fornec_list = fornec_dao.ler()
@@ -76,32 +76,44 @@ for item in fornec_list:
     print(item.categoria.categoria)
 print('--------------------')
 
-end1 = Endereco('Ipê Verde', '74', 'pq das Oliveiras', '09845210', 'sbc', 'sp')
-cliente1 = Pessoa('Marcel', '92173254', '75646464798',
-                  'marcel@google.com', end1)
+# end1 = Endereco('Ipê Amarelo', '90', 'pq das Oliveiras',
+#                 '99845210', 'sbc', 'sp')
+# cliente1 = Pessoa('Marcel', '92173254', '75646464798',
+#                   'marcel@google.com', end1)
 
-cliente2 = Pessoa('Silvio', '66663254', '88886464798',
-                  'silvio@google.com', end1)
+# cliente2 = Pessoa('Silvio', '66663254', '88886464798',
+#                   'silvio@google.com', end1)
 
 
-dao_cliente = DaoPessoa()
+#dao_cliente = DaoPessoa()
 # dao_cliente.salvar(cliente1)
 # dao_cliente.salvar(cliente2)
 
-print('--------------------')
-lista_clientes = dao_cliente.ler()
-for cliente in lista_clientes:
-    print(cliente.endereco.logradouro)
-print('--------------------')
+# print('--------------------')
+# lista_clientes = dao_cliente.ler()
+# for cliente in lista_clientes:
+#     print(cliente.endereco.logradouro)
+# print('--------------------')
 
 
-func1 = Funcionario('444555', 'Sidnelson', '87912323',
-                    '32222288876', 'sid@hotmail.com', end1)
-dao_func = DaoFuncionario()
-dao_func.salvar(func1)
+# func1 = Funcionario('444555', 'Sidnelson', '87912323',
+#                     '32222288876', 'sid@hotmail.com', end1)
+# dao_func = DaoFuncionario()
+# # dao_func.salvar(func1)
+
+# print('--------------------')
+# lista_func = dao_func.ler()
+# for funcionario in lista_func:
+#     print(funcionario.clt)
+# print('--------------------')
+
+end1 = Endereco('rua micatório', 660,
+                'São Clemente', '07234440', 'diadema', 'sp')
+dao_end = DaoEndereco()
+# dao_end.salvar(end1)
 
 print('--------------------')
-lista_func = dao_func.ler()
-for funcionario in lista_func:
-    print(funcionario.clt)
+list_end = dao_end.ler()
+for end in list_end:
+    print(end.logradouro)
 print('--------------------')
