@@ -3,6 +3,7 @@ from DAO import DaoCategoria, DaoVenda, DaoEstoque, DaoFornecedor, DaoPessoa, Da
 from datetime import datetime
 
 import os
+import sys
 
 
 class ControllerCategoria:
@@ -11,6 +12,10 @@ class ControllerCategoria:
         try:
             categorias = DaoCategoria.ler()
             existe = False
+
+            if categorias is None:
+                DaoCategoria.salvar(Categoria(nova_categoria))
+                sys.exit('Primeira categoria cadastrada com sucesso.')
 
             for cat in categorias:
                 if nova_categoria == cat.categoria:
@@ -25,47 +30,53 @@ class ControllerCategoria:
             print(err)
 
     def remover_categoria(self, categoria_remover):
-        categorias = DaoCategoria.ler()
+        try:
+            categorias = DaoCategoria.ler()
 
-        cat_lista = list(
-            filter(lambda categorias: categorias.categoria == categoria_remover, categorias))
+            cat_lista = list(
+                filter(lambda categorias: categorias.categoria == categoria_remover, categorias))
 
-        if len(cat_lista) <= 0:
-            print('Esta categoria não existe para ser removida.')
-        else:
-            for i in range(len(categorias)):
-                if categorias[i].categoria == cat_lista[0].categoria:
-                    del categorias[i]
-                    print(f'Categoria {cat_lista[0].categoria} excluida')
-                    break
+            if len(cat_lista) <= 0:
+                print('Esta categoria não existe para ser removida.')
+            else:
+                for i in range(len(categorias)):
+                    if categorias[i].categoria == cat_lista[0].categoria:
+                        del categorias[i]
+                        print(f'Categoria {cat_lista[0].categoria} excluida')
+                        break
 
-            with open('categoria.txt', 'w') as arq:
-                for cat in categorias:
-                    arq.writelines(cat.categoria)
-                    arq.writelines('\n')
+                with open('categorias.txt', 'w', encoding='UTF-8', errors='replace') as arq:
+                    for cat in categorias:
+                        arq.writelines(cat.categoria)
+                        arq.writelines('\n')
+        except Exception as err:
+            print(err)
 
     def alterar_categoria(self, categoria_alterar, categoria_alterada):
-        categorias = DaoCategoria.ler()
+        try:
+            categorias = DaoCategoria.ler()
 
-        cat = list(filter(lambda categorias: categorias.categoria ==
-                          categoria_alterar, categorias))
+            cat = list(filter(lambda categorias: categorias.categoria ==
+                              categoria_alterar, categorias))
 
-        if cat:
-            cat_existentes = list(filter(
-                lambda categorias: categorias.categoria == categoria_alterada, categorias))
+            if cat:
+                cat_existentes = list(filter(
+                    lambda categorias: categorias.categoria == categoria_alterada, categorias))
 
-            if not cat_existentes:
-                categorias = list(map(lambda categorias: Categoria(categoria_alterada) if(
-                    categorias.categoria == categoria_alterar) else(categorias), categorias))
+                if not cat_existentes:
+                    categorias = list(map(lambda categorias: Categoria(categoria_alterada) if(
+                        categorias.categoria == categoria_alterar) else(categorias), categorias))
+                else:
+                    print('A categoria que deseja alterar já existe.')
             else:
-                print('A categoria que deseja alterar já existe.')
-        else:
-            print('A categoria que deseja alterar não existe')
+                print('A categoria que deseja alterar não existe')
 
-        with open('categorias.txt', 'w') as arq:
-            for i in categorias:
-                arq.writelines(i.categoria)
-                arq.writelines('\n')
+            with open('categorias.txt', 'w', encoding='UTF-8', errors='replace') as arq:
+                for i in categorias:
+                    arq.writelines(i.categoria)
+                    arq.writelines('\n')
+        except Exception as err:
+            print(err)
 
     def mostrar_categoria(self):
         categorias = DaoCategoria.ler()
@@ -84,11 +95,17 @@ class ControllerEstoque:
 
         cat = list(filter(lambda estoque: estoque.categoria ==
                           categoria_prod, categoria))
-        prod_em_estoque = list(
-            filter(lambda estoque: estoque.produto.nome == nome_prod, estoque))
 
         if cat:
-            if len(prod_em_estoque) == 0:
+            if not estoque:
+                DaoEstoque.salvar(
+                    Produto(nome_prod, preco_prod, Categoria(categoria_prod)), quantidade)
+                sys.exit('Primeiro produto cadastrado com sucesso')
+
+            prod_em_estoque = list(
+                filter(lambda estoque: estoque.produto.nome == nome_prod, estoque))
+
+            if not prod_em_estoque:
                 DaoEstoque.salvar(
                     Produto(nome_prod, preco_prod, Categoria(categoria_prod)), quantidade)
                 print('Produto cadastrado com sucesso')
@@ -110,7 +127,7 @@ class ControllerEstoque:
         else:
             print('O produto que deseja remover não existe')
 
-        with open('estoque.txt', 'w') as arq:
+        with open('estoque.txt', 'w', encoding='UTF-8', errors='replace') as arq:
             for i in estoque:
                 arq.writelines(i.produto.nome + '|' + i.produto.preco + '|' +
                                i.produto.categoria.categoria + '|' + str(i.quantidade))
@@ -118,6 +135,7 @@ class ControllerEstoque:
 
     def alterar_produto(self, nome_alterar, novo_nome, novo_preco, nova_categoria, nova_quantidade):
         estoque = DaoEstoque.ler()
+
         cat = list(filter(
             lambda estoque: estoque.produto.categoria.categoria == nova_categoria, estoque))
 
@@ -135,11 +153,12 @@ class ControllerEstoque:
                                     nova_categoria)), nova_quantidade)
                             if(estoque.produto.nome == nome_alterar) else(estoque), estoque))
 
-                    with open('estoque.txt', 'w') as arq:
+                    with open('estoque.txt', 'w', encoding='UTF-8', errors='replace') as arq:
                         for est in estoque:
-                            arq.writelines(est.produto.nome + '|' + est.produto.preco +
-                                           '|' + est.produto.categoria.categoria + '|' + est.quantidade)
+                            arq.writelines(est.produto.nome + '|' + str(est.produto.preco) +
+                                           '|' + est.produto.categoria.categoria + '|' + str(est.quantidade))
                             arq.writelines('\n')
+                        print('O produto foi alterado com sucesso.')
                 else:
                     print('Produto já cadastrado')
             else:
@@ -192,7 +211,7 @@ class ControllerVenda:
             temp.append(Estoque(Produto(i.produto.nome, i.produto.preco, Categoria(
                 i.produto.categoria.categoria)), i.quantidade))
 
-        arq = open('estoque.txt', 'w')
+        arq = open('estoque.txt', 'w', encoding='UTF-8', errors='replace')
         arq.writelines('')
 
         for i in temp:
@@ -265,25 +284,96 @@ class ControllerVenda:
         print(f"Total vendido : R${total:.2f}")
 
 
-a = ControllerVenda()
-a.mostrar_vendas('01/03/2021', '31/03/2021')
-# a.relatorio_vendas()
-# a.cadastrar_venda('abacaxi', 'Aldebário José', 'Cleonilso', 10)
-# a.cadastrar_venda('abacaxi', 'Aldebário José', 'Jeocidio', 15)
-# a.cadastrar_venda('abacaxi', 'Aldebário José', 'Cleopatra', 5)
-# a.cadastrar_venda('iphone', 'Arnaldo j jr', 'Serafim', 1)
-# a.cadastrar_venda('iphone', 'Cristaldo', 'Amaral', 2)
+class ControllerFornecedor:
 
-#b = ControllerCategoria()
-# b.cadastrarCategoria('frutas')
+    def cadastrar_fornecedor(self, nome_fornec, cnpj, telefone, categoria):
+        fornecedores = DaoFornecedor.ler()
+        categorias = DaoCategoria.ler()
 
-#x = ControllerEstoque()
-#x.cadastrar_produto('abacaxi', 4.99, 'frutas', 100)
-# x.mostrarEstoque()
-#x.alterarProduto('smartphone', 'iphone', '900', 'portatil', '10')
-# x.removerProduto('cerveja')
-# cat1 = Categoria('portatil')
-# DaoCategoria.salvar(cat1)
-# p1 = Produto('smartphone', '1900', cat1)
-# DaoEstoque.salvar(p1, 10)
-# x.cadastrarProduto(p1, 10)
+        cat_existente = list(filter(lambda x: x.categoria ==
+                                    categoria, categorias))
+
+        if cat_existente:
+            if not fornecedores:
+                DaoFornecedor.salvar(Fornecedor(
+                    nome_fornec, cnpj, telefone, Categoria(categoria)))
+                sys.exit('Primeiro fornecedor foi cadastrado com sucesso.')
+
+        fornec_existente = list(filter(lambda x: x.nome ==
+                                       nome_fornec, fornecedores))
+
+        cnpj_existente = list(filter(lambda x: x.cnpj ==
+                                     cnpj, fornecedores))
+
+        telefone_existente = list(filter(lambda x: x.telefone ==
+                                         telefone, fornecedores))
+
+        if not fornec_existente:
+            if not cnpj_existente:
+                if not telefone_existente:
+                    if cat_existente:
+                        DaoFornecedor.salvar(Fornecedor(
+                            nome_fornec, cnpj, telefone, Categoria(categoria)))
+                        print('O fornecedor foi cadastrado com sucesso.')
+                    else:
+                        print(
+                            'A categoria informada não existe, é necessário cadastrá-la antes')
+                else:
+                    print('Telefone já existente')
+            else:
+                print('cnpj já existente')
+        else:
+            print(
+                'O fornecedor que desejar cadastrar já se encontra no nosso banco de dados')
+
+    def alterar_fornecedor(self, nome_alterar, nome_novo, cnpj, telefone, categoria):
+        fornecedores = DaoFornecedor.ler()
+        categorias = DaoCategoria.ler()
+
+        cat = list(
+            filter(lambda x: x.categoria == categoria, categorias))
+
+        if cat:
+            fornec_cadastrado = list(
+                filter(lambda x: x.nome == nome_alterar, fornecedores))
+            if fornec_cadastrado:
+                fornec_existente = list(
+                    filter(lambda x: x.nome == nome_novo, fornecedores))
+                if not fornec_existente:
+                    fornecedores = list(
+                        map(
+                            lambda x: Fornecedor(nome_novo, cnpj, telefone, Categoria(
+                                categoria)) if(x.nome == nome_alterar) else(x), fornecedores))
+
+                    with open('fornecedor.txt', 'w', encoding='UTF-8', errors='replace') as arq:
+                        for fornecedor in fornecedores:
+                            arq.writelines(fornecedor.nome + '|' + fornecedor.cnpj +
+                                           '|' + fornecedor.telefone + '|' + fornecedor.categoria.categoria)
+                            arq.writelines('\n')
+                        print('O fornecedor foi alterado com sucesso.')
+                else:
+                    print('Fornecedor já cadastrado')
+            else:
+                print('O fornecedor que deseja alterar não existe.')
+        else:
+            print('A categoria informada não existe')
+
+
+class ControllerCliente:
+    pass
+
+
+class ControllerFuncionario:
+    pass
+
+
+a = ControllerFornecedor()
+a.alterar_fornecedor('OrangeCo Ltda', 'FruitsCo Ltda',
+                     '10774927000144', '977111343', 'frutas')
+
+#a = ControllerCategoria()
+# a.cadastrar_categoria('games')
+
+# a = ControllerFornecedor()
+# a.cadastrar_fornecedor('CerealWorld Company', '99974927000144',
+#                        '966611343', 'cereais')

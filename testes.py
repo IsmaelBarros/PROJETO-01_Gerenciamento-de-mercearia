@@ -1,10 +1,26 @@
-a = ['a', 'b', 'c']
+class FullName:
+    sobrenome = 'barros'
 
-flag = False
+    @classmethod
+    def do_some(cls):
+        cls.nome = 'ismael'
+        nome_completo = cls.nome + cls.sobrenome
+        print(nome_completo)
 
-for i in a:
-    if not flag:
-        if a[0] == 2:
-            print('do something')
 
-    print('ismael')
+teste = FullName()
+teste.do_some()
+
+
+class FullName1:
+    sobrenome = 'barros'
+
+    def do_some(self):
+        self.nome = 'ismael'
+
+        nome_completo = self.nome + self.sobrenome
+        print(nome_completo)
+
+
+# teste = FullName1()
+# teste.do_some()

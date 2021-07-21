@@ -1,5 +1,5 @@
-bebidas alcoolicas
-carnes
-aves
-portatil
+verduras
+legumes
 frutas
+cereais
+games
