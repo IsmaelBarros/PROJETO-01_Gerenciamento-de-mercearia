@@ -2,3 +2,4 @@ venv/
 __pycache__/
 testes.py
 *.txt
+app_test.py

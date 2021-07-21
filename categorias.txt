@@ -1,5 +1,1 @@
-verduras
-legumes
-frutas
-cereais
-games
+sementes

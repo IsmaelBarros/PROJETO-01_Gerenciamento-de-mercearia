@@ -42,13 +42,27 @@ class ControllerCategoria:
                 for i in range(len(categorias)):
                     if categorias[i].categoria == cat_lista[0].categoria:
                         del categorias[i]
-                        print(f'Categoria {cat_lista[0].categoria} excluida')
+                        print(
+                            f"Categoria '{cat_lista[0].categoria}' foi excluida")
                         break
 
                 with open('categorias.txt', 'w', encoding='UTF-8', errors='replace') as arq:
                     for cat in categorias:
                         arq.writelines(cat.categoria)
                         arq.writelines('\n')
+
+            estoque = DaoEstoque.ler()
+
+            estoque = list(
+                map(lambda x: Estoque(Produto(x.produto.nome, x.produto.preco, Categoria("Sem estoque")), x.quantidade)
+                    if(x.produto.categoria.categoria == categoria_remover) else(x), estoque))
+
+            with open('estoque.txt', 'w', encoding='UTF-8', errors='replace') as arq:
+                for i in estoque:
+                    arq.writelines(i.produto.nome + '|' + i.produto.preco + '|' +
+                                   i.produto.categoria.categoria + '|' + str(i.quantidade))
+                    arq.writelines('\n')
+
         except Exception as err:
             print(err)
 
@@ -66,6 +80,20 @@ class ControllerCategoria:
                 if not cat_existentes:
                     categorias = list(map(lambda categorias: Categoria(categoria_alterada) if(
                         categorias.categoria == categoria_alterar) else(categorias), categorias))
+                    print('A alteração é efetuada com sucesso')
+
+                    estoque = DaoEstoque.ler()
+
+                    estoque = list(
+                        map(lambda x: Estoque(Produto(x.produto.nome, x.produto.preco, Categoria(categoria_alterada)), x.quantidade)
+                            if(x.produto.categoria.categoria == categoria_alterar) else(x), estoque))
+
+                    with open('estoque.txt', 'w', encoding='UTF-8', errors='replace') as arq:
+                        for i in estoque:
+                            arq.writelines(i.produto.nome + '|' + i.produto.preco + '|' +
+                                           i.produto.categoria.categoria + '|' + str(i.quantidade))
+                            arq.writelines('\n')
+
                 else:
                     print('A categoria que deseja alterar já existe.')
             else:
@@ -554,50 +582,52 @@ class ControllerFuncionario:
                             lambda x: Funcionario(clt, nome_novo, telefone, cpf, email, Endereco(
                                 logradouro, numero, bairro, cep, cidade, estado)) if(x.nome == nome_alterar) else(x), funcionarios))
 
-                    with open('clientes.txt', 'w', encoding='UTF-8', errors='replace') as arq:
+                    with open('funcionarios.txt', 'w', encoding='UTF-8', errors='replace') as arq:
                         for funcionario in funcionarios:
-                            arq.writelines(funcionario.nome + '|' + funcionario.telefone + '|' + funcionario.cpf + '|' + funcionario.email + '|' + funcionario.endereco.logradouro + '|' +
+                            arq.writelines(funcionario.clt + '|' + funcionario.nome + '|' + funcionario.telefone + '|' + funcionario.cpf + '|' + funcionario.email + '|' + funcionario.endereco.logradouro + '|' +
                                            funcionario.endereco.numero + '|' + funcionario.endereco.bairro + '|' + funcionario.endereco.cep + '|' + funcionario.endereco.cidade + '|' + funcionario.endereco.estado)
                             arq.writelines('\n')
                         print('O funcionario foi alterado com sucesso.')
                 else:
-                    print('Fornecedor já cadastrado')
+                    print('Funcionario já cadastrado')
             else:
-                print('O cliente que deseja alterar não existe.')
+                print('O funcionario que deseja alterar não existe.')
         else:
             print('O cpf informado não existe no nosso cadastro')
 
     def remover_funcionario(self, nome):
-        clientes = DaoPessoa.ler()
 
-        cl = list(
-            filter(lambda x: x.nome == nome, clientes))
+        funcionarios = DaoFuncionario.ler()
 
-        if cl:
-            for i in range(len(clientes)):
-                if clientes[i].nome == nome:
-                    del clientes[i]
-                    print('O cliente foi removido com sucesso.')
+        func = list(
+            filter(lambda x: x.nome == nome, funcionarios))
+
+        if func:
+            for i in range(len(funcionarios)):
+                if funcionarios[i].nome == nome:
+                    del funcionarios[i]
+                    print('O funcionário foi removido com sucesso.')
                     break
         else:
-            print('O cliente que deseja remover não existe')
+            print('O funcionário que deseja remover não existe')
 
-        with open('clientes.txt', 'w', encoding='UTF-8', errors='replace') as arq:
-            for cliente in clientes:
-                arq.writelines(cliente.nome + '|' + cliente.telefone + '|' + cliente.cpf + '|' + cliente.email + '|' + cliente.endereco.logradouro + '|' +
-                               cliente.endereco.numero + '|' + cliente.endereco.bairro + '|' + cliente.endereco.cep + '|' + cliente.endereco.cidade + '|' + cliente.endereco.estado)
+        with open('funcionarios.txt', 'w', encoding='UTF-8', errors='replace') as arq:
+            for funcionario in funcionarios:
+                arq.writelines(funcionario.clt + '|' + funcionario.nome + '|' + funcionario.telefone + '|' + funcionario.cpf + '|' + funcionario.email + '|' + funcionario.endereco.logradouro + '|' +
+                               funcionario.endereco.numero + '|' + funcionario.endereco.bairro + '|' + funcionario.endereco.cep + '|' + funcionario.endereco.cidade + '|' + funcionario.endereco.estado)
                 arq.writelines('\n')
 
     def mostrar_funcionario(self):
-        clientes = DaoPessoa.ler()
+        funcionarios = DaoFuncionario.ler()
 
-        if not clientes:
-            print('Não há clientes cadastrados')
+        if not funcionarios:
+            print('Não há funcionarios cadastrados')
         else:
-            print('==========Clientes==========')
-            for i in clientes:
+            print('==========Funcionários==========')
+            for i in funcionarios:
                 print(
                     f'Nome:     {i.nome}\n'
+                    f'CLT:     {i.clt}\n'
                     f'CPF:      {i.cpf}\n'
                     f'Telefone: {i.telefone}\n'
                     f'Email:    {i.email}\n'
@@ -609,10 +639,3 @@ class ControllerFuncionario:
                     f'Estado:   {i.endereco.estado}\n'
                 )
                 print('--------------------')
-
-
-a = ControllerFuncionario()
-a.cadastrar_funcionario('123', 'christian', '123459875', '43312256678', 'cris@gmail.com',
-                        'rua ipe rosa', '34', 'vila carrão', '98735340', 'sao caetano', 'paraiba')
-a.cadastrar_funcionario('456', 'joão', '129999875', '43388856678', 'joao@gmail.com',
-                        'rua ipe branco', '64', 'vila boobo', '93435340', 'sao caetano', 'bahia')
