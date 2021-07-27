@@ -1,6 +1,2 @@
-cenoura|1.29|legumes|100
-batata|0.79|legumes|100
-banana|1.99|Sem estoque|100
-abacaxi|5.99|Sem estoque|100
-trigo|7.99|sementes|100
-soja|12.19|sementes|100
+banana|1.99|frutas|40
+abacaxi|5.89|frutas|270

@@ -46,17 +46,21 @@ class DaoVenda:
 
     @classmethod
     def ler(cls):
-        with open(cls.db_file, 'r') as arq:
-            cls.venda = arq.readlines()
+        if os.path.isfile(cls.db_file):
+            with open(cls.db_file, 'r') as arq:
+                cls.venda = arq.readlines()
 
-        cls.venda = list(map(lambda x: x.replace('\n', ''), cls.venda))
-        cls.venda = list(map(lambda x: x.split('|'), cls.venda))
+            cls.venda = list(map(lambda x: x.replace('\n', ''), cls.venda))
+            cls.venda = list(map(lambda x: x.split('|'), cls.venda))
 
-        vend = []
-        for i in cls.venda:
-            vend.append(
-                Venda(Produto(i[0], i[1], Categoria(i[2])), i[3], i[4], i[5], i[6]))
-        return vend
+            vend = []
+            for i in cls.venda:
+                vend.append(
+                    Venda(Produto(i[0], i[1], Categoria(i[2])), i[3], i[4], i[5], i[6]))
+            return vend
+        else:
+            with open(cls.db_file, 'w') as arq:
+                pass
 
 
 class DaoEstoque:

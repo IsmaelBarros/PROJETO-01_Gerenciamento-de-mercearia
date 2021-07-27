@@ -15,7 +15,7 @@ class ControllerCategoria:
 
             if categorias is None:
                 DaoCategoria.salvar(Categoria(nova_categoria))
-                sys.exit('Primeira categoria cadastrada com sucesso.')
+                sys.exit('Primeira categoria cadastrada com sucesso.\n')
 
             for cat in categorias:
                 if nova_categoria == cat.categoria:
@@ -23,9 +23,9 @@ class ControllerCategoria:
 
             if not existe:
                 DaoCategoria.salvar(Categoria(nova_categoria))
-                print('categoria cadastrada com sucesso.')
+                print('categoria cadastrada com sucesso.\n')
             else:
-                print('A categoria que deseja cadastrar já existe.')
+                print('A categoria que deseja cadastrar já existe.\n')
         except Exception as err:
             print(err)
 
@@ -37,13 +37,13 @@ class ControllerCategoria:
                 filter(lambda categorias: categorias.categoria == categoria_remover, categorias))
 
             if len(cat_lista) <= 0:
-                print('Esta categoria não existe para ser removida.')
+                print('Esta categoria não existe para ser removida.\n')
             else:
                 for i in range(len(categorias)):
                     if categorias[i].categoria == cat_lista[0].categoria:
                         del categorias[i]
                         print(
-                            f"Categoria '{cat_lista[0].categoria}' foi excluida")
+                            f"Categoria '{cat_lista[0].categoria}' foi excluida.\n")
                         break
 
                 with open('categorias.txt', 'w', encoding='UTF-8', errors='replace') as arq:
@@ -51,17 +51,18 @@ class ControllerCategoria:
                         arq.writelines(cat.categoria)
                         arq.writelines('\n')
 
-            estoque = DaoEstoque.ler()
+            if estoque:
+                estoque = DaoEstoque.ler()
 
-            estoque = list(
-                map(lambda x: Estoque(Produto(x.produto.nome, x.produto.preco, Categoria("Sem estoque")), x.quantidade)
-                    if(x.produto.categoria.categoria == categoria_remover) else(x), estoque))
+                estoque = list(
+                    map(lambda x: Estoque(Produto(x.produto.nome, x.produto.preco, Categoria("Sem estoque")), x.quantidade)
+                        if(x.produto.categoria.categoria == categoria_remover) else(x), estoque))
 
-            with open('estoque.txt', 'w', encoding='UTF-8', errors='replace') as arq:
-                for i in estoque:
-                    arq.writelines(i.produto.nome + '|' + i.produto.preco + '|' +
-                                   i.produto.categoria.categoria + '|' + str(i.quantidade))
-                    arq.writelines('\n')
+                with open('estoque.txt', 'w', encoding='UTF-8', errors='replace') as arq:
+                    for i in estoque:
+                        arq.writelines(i.produto.nome + '|' + i.produto.preco + '|' +
+                                       i.produto.categoria.categoria + '|' + str(i.quantidade))
+                        arq.writelines('\n')
 
         except Exception as err:
             print(err)
@@ -80,7 +81,7 @@ class ControllerCategoria:
                 if not cat_existentes:
                     categorias = list(map(lambda categorias: Categoria(categoria_alterada) if(
                         categorias.categoria == categoria_alterar) else(categorias), categorias))
-                    print('A alteração é efetuada com sucesso')
+                    print('A alteração é efetuada com sucesso.\n')
 
                     estoque = DaoEstoque.ler()
 
@@ -95,9 +96,9 @@ class ControllerCategoria:
                             arq.writelines('\n')
 
                 else:
-                    print('A categoria que deseja alterar já existe.')
+                    print('A categoria que deseja alterar já existe.\n')
             else:
-                print('A categoria que deseja alterar não existe')
+                print('A categoria que deseja alterar não existe.\n')
 
             with open('categorias.txt', 'w', encoding='UTF-8', errors='replace') as arq:
                 for i in categorias:
@@ -109,10 +110,11 @@ class ControllerCategoria:
     def mostrar_categoria(self):
         categorias = DaoCategoria.ler()
         if not categorias:
-            print('Categoria vazia')
+            print('Categoria vazia.\n')
         else:
             for cat in categorias:
                 print(f'Categoria: {cat.categoria}')
+        print('\n')
 
 
 class ControllerEstoque:
@@ -127,20 +129,20 @@ class ControllerEstoque:
         if cat:
             if not estoque:
                 DaoEstoque.salvar(
-                    Produto(nome_prod, preco_prod, Categoria(categoria_prod)), quantidade)
-                sys.exit('Primeiro produto cadastrado com sucesso')
-
-            prod_em_estoque = list(
-                filter(lambda estoque: estoque.produto.nome == nome_prod, estoque))
-
-            if not prod_em_estoque:
-                DaoEstoque.salvar(
-                    Produto(nome_prod, preco_prod, Categoria(categoria_prod)), quantidade)
-                print('Produto cadastrado com sucesso')
+                    Produto(nome_prod, preco_prod, Categoria(categoria_prod)), int(quantidade))
+                print('Primeiro produto cadastrado com sucesso.\n')
             else:
-                print('Produto já existe em estoque')
+                prod_em_estoque = list(
+                    filter(lambda estoque: estoque.produto.nome == nome_prod, estoque))
+
+                if not prod_em_estoque:
+                    DaoEstoque.salvar(
+                        Produto(nome_prod, preco_prod, Categoria(categoria_prod)), int(quantidade))
+                    print('Produto cadastrado com sucesso.\n')
+                else:
+                    print('Produto já existe em estoque.\n')
         else:
-            print('Categoria inexistente')
+            print('Categoria inexistente.\n')
 
     def remover_produto(self, nome):
         estoque = DaoEstoque.ler()
@@ -151,7 +153,7 @@ class ControllerEstoque:
                 if estoque[i].produto.nome == nome:
                     del estoque[i]
                     break
-            print('O produto foi removido com sucesso.')
+            print('O produto foi removido com sucesso.\n')
         else:
             print('O produto que deseja remover não existe')
 
@@ -186,13 +188,13 @@ class ControllerEstoque:
                             arq.writelines(est.produto.nome + '|' + str(est.produto.preco) +
                                            '|' + est.produto.categoria.categoria + '|' + str(est.quantidade))
                             arq.writelines('\n')
-                        print('O produto foi alterado com sucesso.')
+                        print('O produto foi alterado com sucesso.\n')
                 else:
-                    print('Produto já cadastrado')
+                    print('Produto já cadastrado\n')
             else:
-                print('O produto que deseja alterar não existe.')
+                print('O produto que deseja alterar não existe.\n')
         else:
-            print('A categoria informada não existe')
+            print('A categoria informada não existe\n')
 
     def mostrar_estoque(self):
         estoque = DaoEstoque.ler()
@@ -224,7 +226,7 @@ class ControllerVenda:
             if existe == False:
                 if i.produto.nome == nome_produto:
                     existe = True
-                    if i.quantidade >= quantidadeVendida:
+                    if int(i.quantidade) >= int(quantidadeVendida):
                         quantidade = True
                         i.quantidade = int(i.quantidade) - \
                             int(quantidadeVendida)
@@ -262,29 +264,34 @@ class ControllerVenda:
         vendas = DaoVenda.ler()
         produtos = []
 
-        for i in vendas:
-            nome = i.itemVendido.nome
-            quantidade = i.quantidadeVendida
-            tamanho = list(filter(lambda x: x['produto'] == nome, produtos))
-            if tamanho:
-                produtos = list(map(lambda x: {'produto': nome,
-                                               'quantidade': int(x['quantidade']) + int(quantidade)}
-                                    if(x['produto'] == nome) else(x), produtos))
-            else:
-                produtos.append({'produto': nome,
-                                 'quantidade': quantidade})
+        if not vendas:
+            print('Ainda não tem vendas para visualizar.\n')
 
-        ordenado = sorted(
-            produtos, key=lambda k: k['quantidade'], reverse=True)
+        else:
+            for i in vendas:
+                nome = i.item_vendido.nome
+                quantidade = i.quantidade_vendida
+                tamanho = list(
+                    filter(lambda x: x['produto'] == nome, produtos))
+                if tamanho:
+                    produtos = list(map(lambda x: {'produto': nome,
+                                                   'quantidade': int(x['quantidade']) + int(quantidade)}
+                                        if(x['produto'] == nome) else(x), produtos))
+                else:
+                    produtos.append({'produto': nome,
+                                     'quantidade': quantidade})
 
-        print('Este são os produto mais vendidos')
+            ordenado = sorted(
+                produtos, key=lambda k: k['quantidade'], reverse=True)
 
-        a = 1
-        for i in ordenado:
-            print(f"==========Produto [{a}]==========")
-            print(f"Produto: {i['produto']}\n"
-                  f"Quantidade: {i['quantidade']}\n")
-            a += 1
+            print('Este são os produtos mais vendidos\n')
+
+            a = 1
+            for i in ordenado:
+                print(f"==========Produto [{a}]==========")
+                print(f"Produto: {i['produto']}\n"
+                      f"Quantidade: {i['quantidade']}\n")
+                a += 1
 
     def mostrar_vendas(self, data_ini, data_fin):
         vendas = DaoVenda.ler()
@@ -299,17 +306,17 @@ class ControllerVenda:
         total = 0
         for i in vendas_selecionadas:
             print(f"==========Produto [{count}]==========")
-            print(f"Nome: {i.itemVendido.nome}\n"
-                  f"Preço: R${i.itemVendido.preco}\n"
-                  f"Categoria: {i.itemVendido.categoria.categoria}\n"
+            print(f"Nome: {i.item_vendido.nome}\n"
+                  f"Preço: R${i.item_vendido.preco}\n"
+                  f"Categoria: {i.item_vendido.categoria.categoria}\n"
                   f"Data: {i.data}\n"
-                  f"Quantidade Vendida: {i.quantidadeVendida}\n"
+                  f"Quantidade Vendida: {i.quantidade_vendida}\n"
                   f"Cliente: {i.comprador}\n"
                   f"Vendedor: {i.vendedor}\n")
-            total += float(i.itemVendido.preco) * int(i.quantidadeVendida)
+            total += float(i.item_vendido.preco) * int(i.quantidade_vendida)
             count += 1
 
-        print(f"Total vendido : R${total:.2f}")
+        print(f"Total vendido : R${total:.2f}\n")
 
 
 class ControllerFornecedor:
@@ -325,34 +332,33 @@ class ControllerFornecedor:
             if not fornecedores:
                 DaoFornecedor.salvar(Fornecedor(
                     nome_fornec, cnpj, telefone, Categoria(categoria)))
-                sys.exit('Primeiro fornecedor foi cadastrado com sucesso.')
-
-        fornec_existente = list(filter(lambda x: x.nome ==
-                                       nome_fornec, fornecedores))
-
-        cnpj_existente = list(filter(lambda x: x.cnpj ==
-                                     cnpj, fornecedores))
-
-        telefone_existente = list(filter(lambda x: x.telefone ==
-                                         telefone, fornecedores))
-
-        if not fornec_existente:
-            if not cnpj_existente:
-                if not telefone_existente:
-                    if cat_existente:
-                        DaoFornecedor.salvar(Fornecedor(
-                            nome_fornec, cnpj, telefone, Categoria(categoria)))
-                        print('O fornecedor foi cadastrado com sucesso.')
-                    else:
-                        print(
-                            'A categoria informada não existe, é necessário cadastrá-la antes')
-                else:
-                    print('Telefone já existente')
+                print('Primeiro fornecedor foi cadastrado com sucesso.\n')
             else:
-                print('cnpj já existente')
+                fornec_existente = list(filter(lambda x: x.nome ==
+                                               nome_fornec, fornecedores))
+
+                cnpj_existente = list(filter(lambda x: x.cnpj ==
+                                             cnpj, fornecedores))
+
+                telefone_existente = list(filter(lambda x: x.telefone ==
+                                                 telefone, fornecedores))
+
+                if not fornec_existente:
+                    if not cnpj_existente:
+                        if not telefone_existente:
+                            DaoFornecedor.salvar(Fornecedor(
+                                nome_fornec, cnpj, telefone, Categoria(categoria)))
+                            print('O fornecedor foi cadastrado com sucesso.\n')
+                        else:
+                            print('Telefone já existente\n')
+                    else:
+                        print('cnpj já existente\n')
+                else:
+                    print(
+                        'O fornecedor que desejar cadastrar já se encontra no nosso banco de dados\n')
         else:
             print(
-                'O fornecedor que desejar cadastrar já se encontra no nosso banco de dados')
+                'A categoria informada não existe, é necessário cadastrá-la antes\n')
 
     def alterar_fornecedor(self, nome_alterar, nome_novo, cnpj, telefone, categoria):
         fornecedores = DaoFornecedor.ler()
@@ -396,10 +402,10 @@ class ControllerFornecedor:
             for i in range(len(fornecedores)):
                 if fornecedores[i].nome == nome:
                     del fornecedores[i]
-                    print('O fornecedor foi removido com sucesso.')
+                    print('O fornecedor foi removido com sucesso.\n')
                     break
         else:
-            print('O fornecedor que deseja remover não existe')
+            print('O fornecedor que deseja remover não existe\n')
 
         with open('fornecedor.txt', 'w', encoding='UTF-8', errors='replace') as arq:
             for i in fornecedores:
@@ -433,26 +439,28 @@ class ControllerCliente:
             DaoPessoa.salvar(Pessoa(
                 nome_cliente, telefone, cpf, email,
                 Endereco(logradouro, numero, bairro, cep, cidade, estado)))
-            sys.exit('Primeiro cliente foi cadastrado com sucesso.')
+            print('Primeiro cliente foi cadastrado com sucesso.\n')
 
-        cpf_existente = list(filter(lambda x: x.cpf == cpf, clientes))
-        telefone_existente = list(
-            filter(lambda x: x.telefone == telefone, clientes))
-        email_existente = list(filter(lambda x: x.email == email, clientes))
-
-        if not cpf_existente:
-            if not email_existente:
-                if not telefone_existente:
-                    DaoPessoa.salvar(Pessoa(
-                        nome_cliente, telefone, cpf, email, Endereco(logradouro, numero, bairro, cep, cidade, estado)))
-                    print('O cliente foi cadastrado com sucesso.')
-                else:
-                    print('Telefone já existente')
-            else:
-                print('email já existente')
         else:
-            print(
-                'O cpf informado já se encontra no nosso banco de dados')
+            cpf_existente = list(filter(lambda x: x.cpf == cpf, clientes))
+            telefone_existente = list(
+                filter(lambda x: x.telefone == telefone, clientes))
+            email_existente = list(
+                filter(lambda x: x.email == email, clientes))
+
+            if not cpf_existente:
+                if not email_existente:
+                    if not telefone_existente:
+                        DaoPessoa.salvar(Pessoa(
+                            nome_cliente, telefone, cpf, email, Endereco(logradouro, numero, bairro, cep, cidade, estado)))
+                        print('O cliente foi cadastrado com sucesso.\n')
+                    else:
+                        print('Telefone já existente\n')
+                else:
+                    print('email já existente\n')
+            else:
+                print(
+                    'O cpf informado já se encontra no nosso banco de dados\n')
 
     def alterar_cliente(self, nome_alterar, nome_novo, telefone, cpf, email, logradouro, numero, bairro, cep, cidade, estado):
         clientes = DaoPessoa.ler()
@@ -495,10 +503,10 @@ class ControllerCliente:
             for i in range(len(clientes)):
                 if clientes[i].nome == nome:
                     del clientes[i]
-                    print('O cliente foi removido com sucesso.')
+                    print('O cliente foi removido com sucesso.\n')
                     break
         else:
-            print('O cliente que deseja remover não existe')
+            print('O cliente que deseja remover não existe\n')
 
         with open('clientes.txt', 'w', encoding='UTF-8', errors='replace') as arq:
             for cliente in clientes:
@@ -510,7 +518,7 @@ class ControllerCliente:
         clientes = DaoPessoa.ler()
 
         if not clientes:
-            print('Não há clientes cadastrados')
+            print('Não há clientes cadastrados\n')
         else:
             print('==========Clientes==========')
             for i in clientes:
@@ -538,31 +546,32 @@ class ControllerFuncionario:
             DaoFuncionario.salvar(Funcionario(
                 clt, nome_func, telefone, cpf, email,
                 Endereco(logradouro, numero, bairro, cep, cidade, estado)))
-            sys.exit('Primeiro funcionário foi cadastrado com sucesso.')
+            print('Primeiro funcionário foi cadastrado com sucesso.\n')
 
-        cpf_existente = list(filter(lambda x: x.cpf == cpf, funcionarios))
-        clt_existente = list(filter(lambda x: x.clt == clt, funcionarios))
-        telefone_existente = list(
-            filter(lambda x: x.telefone == telefone, funcionarios))
-        email_existente = list(
-            filter(lambda x: x.email == email, funcionarios))
-
-        if not cpf_existente:
-            if not clt_existente:
-                if not email_existente:
-                    if not telefone_existente:
-                        DaoFuncionario.salvar(Funcionario(
-                            clt, nome_func, telefone, cpf, email, Endereco(logradouro, numero, bairro, cep, cidade, estado)))
-                        print('O funcionário foi cadastrado com sucesso.')
-                    else:
-                        print('Telefone já existente')
-                else:
-                    print('email já existente')
-            else:
-                print('O registro da clt já existe')
         else:
-            print(
-                'O cpf informado já se encontra no nosso banco de dados')
+            cpf_existente = list(filter(lambda x: x.cpf == cpf, funcionarios))
+            clt_existente = list(filter(lambda x: x.clt == clt, funcionarios))
+            telefone_existente = list(
+                filter(lambda x: x.telefone == telefone, funcionarios))
+            email_existente = list(
+                filter(lambda x: x.email == email, funcionarios))
+
+            if not cpf_existente:
+                if not clt_existente:
+                    if not email_existente:
+                        if not telefone_existente:
+                            DaoFuncionario.salvar(Funcionario(
+                                clt, nome_func, telefone, cpf, email, Endereco(logradouro, numero, bairro, cep, cidade, estado)))
+                            print('O funcionário foi cadastrado com sucesso.')
+                        else:
+                            print('Telefone já existente')
+                    else:
+                        print('email já existente')
+                else:
+                    print('O registro da clt já existe')
+            else:
+                print(
+                    'O cpf informado já se encontra no nosso banco de dados')
 
     def alterar_funcionario(self, nome_alterar, nome_novo, clt, telefone, cpf, email, logradouro, numero, bairro, cep, cidade, estado):
         funcionarios = DaoFuncionario.ler()
@@ -621,7 +630,7 @@ class ControllerFuncionario:
         funcionarios = DaoFuncionario.ler()
 
         if not funcionarios:
-            print('Não há funcionarios cadastrados')
+            print('Não há funcionarios cadastrados\n')
         else:
             print('==========Funcionários==========')
             for i in funcionarios:
